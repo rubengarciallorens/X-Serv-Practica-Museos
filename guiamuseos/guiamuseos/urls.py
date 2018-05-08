@@ -17,6 +17,6 @@ from django.contrib import admin
 from museos import views
 
 urlpatterns = [
-    url (r'^$', views.home, name='home'),
+    url (r'^$', views.pos_list, name='home'),
     url(r'^admin/', include(admin.site.urls)),
 ]
