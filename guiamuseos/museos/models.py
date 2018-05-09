@@ -8,6 +8,17 @@ class Post (models.Model):
         return self.post_text
 
 class Museo (models.Model):
-    museo.nombre = models.TextField ()
-    museo.direccion = models.TextField ()
-    museo.url = models.TextField ()
+    ID = models.IntegerField ()
+    nombre = models.TextField ()
+    descripcion_entidad = models.TextField ()
+    equipamiento = models.TextField ()
+    transporte = models.TextField ()
+    descripcion = models.TextField ()
+    horario = models.TextField ()
+    accesibilidad = models.IntegerField()
+    url = models.TextField ()
+    localizacion = models.TextField ()
+    contacto = models.TextField ()
+    tipo = models.TextField ()
+    def __str__ (self):
+        return self.nombre
