@@ -1,34 +1,37 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template.loader import get_template
 from django.template import Context
 from .models import Museo
+from .parser import parserXML
+from django.views.decorators.csrf import csrf_exempt
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.views.generic.edit import FormView
+from django.http.response import HttpResponseRedirect
+from django.core.urlresolvers import reverse_lazy
 
 # Create your views here.
-
+@csrf_exempt
 def pos_list(request):
     if request.method =="GET":
-        if len(Museo.objects.all()) == 0:
-            respuesta = "No hay datos disponibles en la base de datos"
-            form1 = "<br>Actualizar Datos<br>"
-            form1 += "<form action='/' method='post'>"
-            form1 += "<input type= 'hidden' name='opcion' value='1'>"
-            form1 += "<input type= 'submit' value='Actualizar'>"
-            form1 += "</form>"
-        else:
-            form1 = "<br>Mostrar los accesibles<br>"
-            form1 += "<form action='/' method='post'>"
-            form1 += "<input type= 'hidden' name='opcion' value='2'>"
-            form1 += "<input type= 'submit' value='Mostrar'>"
-            form1 += "</form>"
+        respuesta = "<br>Actualizar Datos<br>"
+        respuesta += "<form action='/' method='post'>"
+        respuesta += "<input type= 'hidden' name='opcion' value='1'>"
+        respuesta += "<input type= 'submit' value='Actualizar'>"
+        respuesta += "</form>"
 
     elif request.method == "POST":
-        opcion = request.POST['opcion']
-        if opcion == "1":
-            parser(request)
+        if len(Museo.objects.all()) == 0:
+            parserXML('./museos/museos.xml')
             return redirect("/")
+        respuesta = "<br> Datos actualizados <br>"
 
-        c = Context({'content': respuesta, 'filtro': form1})
-        template = get_template ('index.html')
-        respuesta = template.render(c)
-        return HttpResponse(respuesta)
+    museos = Museo.objects.all()
+    c = Context({'content':  respuesta, 'museos': museos})
+    template = get_template ('index.html')
+    respuesta = template.render(c)
+    return HttpResponse(respuesta)
