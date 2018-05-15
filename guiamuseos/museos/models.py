@@ -1,11 +1,7 @@
 from django.db import models
-
+import django.contrib.auth.models as modelsAuth
 # Create your models here.
 
-class Post (models.Model):
-    post_text = models.TextField (default = "DEFAULT_VALUE")
-    def __str__ (self):
-        return self.post_text
 
 class Museo (models.Model):
     identidad = models.TextField (default = "DEFAULT_VALUE")
@@ -22,3 +18,12 @@ class Museo (models.Model):
     tipo = models.TextField (default = "DEFAULT_VALUE")
     def __str__ (self):
         return self.nombre
+
+class Comentario (models.Model):
+    museo = models.ForeignKey (Museo)
+    comentario = models.TextField(default = "DEFAULT_VALUE")
+    
+class Seleccion (models.Model):
+    museos_fav = models.ManyToManyField(Museo)
+    propietario = models.OneToOneField(modelsAuth.User)
+

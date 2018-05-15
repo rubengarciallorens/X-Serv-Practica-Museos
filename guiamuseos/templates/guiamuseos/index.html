@@ -34,7 +34,7 @@ function clearText(field)
 
 			<div id="templatemo_menu">
 				<ul>
-					<li><a href="#">Home</a></li>
+					<li><a href="/museos">Museos</a></li>
 					<li><a href="#">Archives</a></li>
 					<li><a href="#">Wallpapers</a></li>
 					<li><a href="#">Downloads</a></li>
@@ -49,31 +49,15 @@ function clearText(field)
 			<div id="templatemo_left">
 				<div class="templatemo_post">
 					<div class="templatemo_post_title">
-						<a href="#">Free Website Layout</a></div>
+						<a href="#">{{ content_title }}</a></div>
 					<div class="templatemo_post_text">
-						<a href="#"><img src="{% static 'css/images/templatemo_thumb_1.jpg' %}" alt="Flower" width="150" height="150" /></a>
-						<p>This is a free CSS template provided by <a href="#">TemplateMo</a> website. You may download and apply this  layout for  your personal or commercial websites. Credit goes to <a href="http://www.photovaco.com" target="_blank">PhotoVaco.com</a> for photos used in this template. </p>
-						<p>Vivamus ultricies bibendum viverra. Sagittis vel puru and aien ai dofneonsets srci. In vulputate, felis vitae ultrices dapibus, leo nulla ornare erat, eu tincidunt magna ipm sit amet massdtess vivamus sed condimentum ipsum. Quisque ut tortor in elit luctus.</p>
+						{% block content %}{% endblock %}
 				  </div>
 
-	  <div class="templatemo_post_bottom">
-						<a href="#">24 comments</a></div>
+	  			<div class="templatemo_post_bottom">
+						<a href="#"></a></div>
+			  	</div>
 
-			  </div>
-
-				<div class="templatemo_post">
-					<div class="templatemo_post_title">
-						<a href="#">Web Design Studio</a></div>
-					<div class="templatemo_post_text">
-						<a href="#"><img src="{% static 'css/images/templatemo_thumb_2.jpg' %}" alt="Yellow Rose" width="150" height="150" /></a>
-						<p>Sed egestas, ante et vulputate volutpat, eros pede semper est, vitae luctus metus libero eu augue. Morbi purus libero, faucibus adipiscing, commodo quis, gravida id, est. Sed lectus. Praesent elementum hendrerit tortor.</p>
-						<p>Morbi interdum mollis sapien. Sed ac risus. Phasellus lacinia, magna a ullamcorper laoreet, lectus arcu pulvinar risus, vitae facilisis libero dolor a purus. Sed vel lacus. Mauris nibh felis, adipiscing varius, adipiscing in.</p>
-					</div>
-
-	  <div class="templatemo_post_bottom">
-						<a href="#">56 comments</a></div>
-
-			  </div>
 			</div><!-- End Of left-->
 
 			<div id="templatemo_right">
@@ -94,15 +78,11 @@ function clearText(field)
 
 				<div class="templatemo_section">
 					<div class="templatemo_section_title">
-						Popular Posts
+						Registrar usuario
 					</div>
 					<div class="templatemo_section_bottom">
 				<ul class="templatemo_list">
-							<li><a href="#">Morbi in sem quis dui plac erat orn are. Pell len tesque odio nisi, euis mod in.</a></li>
-							<li><a href="#">Pell len tesque fer men tum dolor. Ali quam quam lectus, facilisis auc tor ultri.</a></li>
-							<li><a href="#">Nulla sed leo. Class aptent taciti socio squ ad litora tor quent per conubia.</a></li>
-							<li><a href="#">Fusce lacinia arcu et nulla. Nulla vitae mau ris non felis mollis fau cibus.</a></li>
-							<li><a href="#">Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci.</a></li>
+							{% block registro %}{% endblock %}
 						</ul>
 					</div>
 				</div>
