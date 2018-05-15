@@ -16,11 +16,14 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from museos import views
 from django.conf.urls.static import static
-from django.conf import settings 
+from django.conf import settings
+from django.contrib.auth.views import login, logout
 
 admin.autodiscover ()
 
 urlpatterns = [
-    url (r'^$', views.pos_list, name='home'),
+    url(r'^$', views.pos_list, name='home'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^login',  views.auth_login),
+    url(r'^accounts/logout/$', logout),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
