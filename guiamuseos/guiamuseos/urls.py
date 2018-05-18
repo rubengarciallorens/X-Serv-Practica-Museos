@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^museos',  views.allmuseums),
     url(r'^logout', logout, {'next_page': '/'}),
     url(r'^register', views.register),
+    url(r'^all/(\d+)$', views.museo_pers),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -42,6 +42,39 @@ def register(request):
     user.save()
     return HttpResponseRedirect("/")
 
+@csrf_exempt
+def museo_pers(request, id):
+    if not request.user.is_authenticated():
+        inicio = "<form action='/login' method='post'>"
+        inicio += "<label for='username'>Username:</label>"
+        inicio += "<input type='text' name='username'"
+        inicio += "<label for='password'>Password:</label>"
+        inicio += "<input type='password' name='password'>"
+
+        inicio += "<input type='submit' value='LOGIN' />"
+        inicio += "</form>"
+
+        registro = "<form action='/register/' method='post'>"
+        registro += "User: <input type= 'text' name='user'>"
+        registro += "Email: <input type= 'text' name='email'>"
+        registro += "Password: <input type= 'password' name='password'>"
+        registro += "<input type= 'submit' value='enviar'>"
+        registro += "</form>"
+
+    if request.user.is_authenticated():
+        inicio = "<p>Bienvenido,  "
+        inicio += request.user.username
+        inicio += "<a href='/logout'> Logout </a></p>"
+        registro = "<p> Se ha identificado usted como: "
+        registro += "<h2>" + request.user.username + "</h2>"
+        registro +="." + "<br> Esperamos que su visita a la página sea satisfactoria"
+    
+    museo=Museo.objects.get(identidad=id)    
+    content_title = str(museo.nombre)
+    c = Context({'inicio': inicio, 'registro': registro, 'content_title': content_title})
+    template = get_template ('museo_pers.html')
+    respuesta = template.render(c)
+    return HttpResponse(respuesta)
 
 @csrf_exempt
 def allmuseums(request):
@@ -84,8 +117,9 @@ def allmuseums(request):
             for museo in museos:
                 content += "<br><a href=" + museo.url + ">"
                 content += museo.nombre + "</a><br>"
+                museoid = str(museo.identidad)
                 if request.user.is_authenticated():
-                    content += "<br> Realizar un comentario sobre " + museo.nombre + ". <br>"
+                    content += "<br><a href='all/"+ museoid +"'> Página propia </a></p><br>"
     
     elif request.method=="POST":
         if len(Museo.objects.all())==0:
@@ -96,14 +130,14 @@ def allmuseums(request):
         for museo in museos:
             content += "<br><a href=" + museo.url + ">"
             content += museo.nombre + "  ""</a><br>"
+            museoid = str(museo.identidad)
             if request.user.is_authenticated():
-                content += "<br> Realizar un comentario sobre " + museo.nombre + ". <br>"
+                content += "<br><a href='all/"+ museoid +"'> Página propia </a></p><br>"
 
     c = Context({'inicio': inicio, 'registro': registro, 'content_title': content_title, 'content': content})
     template = get_template ('museos.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
-
 
 @csrf_exempt
 def main(request):
