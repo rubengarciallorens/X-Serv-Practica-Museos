@@ -25,8 +25,9 @@ urlpatterns = [
     url(r'^$', views.main, name='home'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login',  views.auth_login),
+    url(r'^museos/(\d+)$', views.museo_pers),
     url(r'^museos',  views.allmuseums),
     url(r'^logout', logout, {'next_page': '/'}),
     url(r'^register', views.register),
-    url(r'^all/(\d+)$', views.museo_pers),
+    url(r'^(.*)$', views.personal),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

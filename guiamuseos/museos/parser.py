@@ -15,15 +15,15 @@ def parserXML(file):
     dat_id = "No proporcionado"
     nom = "No proporcionado"
     desc_ent = "No proporcionado"
-    horas = "No proporcionado" 
+    horas = "No proporcionado"
     equip = "No proporcionado"
     trans = "No proporcionado"
     desc = "No proporcionado"
     acc = "No proporcionado"
     cont_url = "No proporcionado"
-    localiz = "No proporcionado" 
+    localiz = "No proporcionado"
     dat_cont = "No proporcionado"
-    dat_tipo = "No proporcionado" 
+    dat_tipo = "No proporcionado"
     for contenido in contenidos.findall('contenido'):
         for atributos in contenido.findall('atributos'):
             for atributo in atributos.findall('atributo'):
@@ -88,19 +88,17 @@ def parserXML(file):
                 if atributo.get ('nombre') == ("DATOSCONTACTOS"):
                     for atributo_sub in atributo.findall('atributo'):
                         if atributo_sub.get ('nombre') == ("TELEFONO"):
-                            dat_cont = atributo_sub.text
+                            dat_telefono = atributo_sub.text
                         if atributo_sub.get ('nombre') == ("FAX"):
-                            dat_cont += ", "
-                            dat_cont += atributo_sub.text
-                        if atributo_sub.get ('nombre') == ("TELEFONO"):
-                            dat_cont += ", "
-                            dat_cont += atributo_sub.text
+                            dat_fax = atributo_sub.text
+                        if atributo_sub.get ('nombre') == ("EMAIL"):
+                            dat_email = atributo_sub.text
                 if atributo.get ('nombre') == ("TIPO"):
                     dat_tipo = atributo.text;
                     continue
 
-        museo = Museo ( identidad = dat_id, nombre = nom, descripcion_entidad = desc_ent, horario  = horas, 
+        museo = Museo ( identidad = dat_id, nombre = nom, descripcion_entidad = desc_ent, horario  = horas,
                         equipamiento = equip, transporte = trans, descripcion = desc, accesibilidad = acc,
-                        url = cont_url, localizacion = localiz, contacto = dat_cont, tipo = dat_tipo )
+                        url = cont_url, localizacion = localiz, telefono = dat_telefono, fax = dat_fax,
+                        email = dat_email, tipo = dat_tipo )
         museo.save()
-                
