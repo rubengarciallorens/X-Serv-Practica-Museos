@@ -56,7 +56,8 @@ ROOT_URLCONF = 'guiamuseos.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates/guiamuseos')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates/guiamuseos'), 
+                 os.path.join(BASE_DIR, 'museos/static/css')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

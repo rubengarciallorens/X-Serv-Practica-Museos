@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template.loader import get_template
 from django.template import Context
-from .models import Museo, Comentario, Seleccion
+from .models import Museo, Comentario, Museo_añadido, Seleccion
 from .parser import parserXML
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -40,6 +41,9 @@ def register(request):
     password = request.POST['password']
     user = User.objects.create_user(username, email, password)
     user.save()
+    titulo = "Página de " + str(username)
+    pagina_personal = Seleccion (propietario=str(username), nombre = titulo)
+    pagina_personal.save()
     return HttpResponseRedirect("/")
 
 @csrf_exempt
@@ -59,11 +63,52 @@ def personal (request, propietario):
         inicio += "<a href='/logout'> Logout </a></p>"
 
     if request.method == "GET":
-        content="No tienes museos añadidos aún a tu lista"
-    elif request.method =="POST":
-        content = "No tienes museos añadidos aún a tu lista"
-    content_title="Página de " + str(request.user.username)
-    c = Context({'inicio': inicio, 'content_title': content_title, 'content': content})
+        seleccion = Seleccion.objects.get (propietario = propietario)
+        favoritos = seleccion.museos_fav.all()
+        content_title=seleccion.nombre
+        content=""
+        for favorito in favoritos:
+            content+="<li>" + favorito.museo.nombre +"</li>"
+            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>" 
+    
+    elif request.method =="POST" and request.POST['opcion']=='1':
+        seleccion = Seleccion.objects.get (propietario = propietario)
+        seleccion.nombre = request.POST['texto']
+        seleccion.save()
+        favoritos = seleccion.museos_fav.all()
+        content_title=seleccion.nombre
+        content=""
+        for favorito in favoritos:
+            content+="<li>" + favorito.museo.nombre +"</li>"
+            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>" 
+     
+    
+    if request.user.is_authenticated() and request.user.username == propietario:
+        personales = "<form action='/" + propietario + "' method=POST>"
+        personales += "Cambiar nombre de tu página personal<input type= 'text' name='texto'>"
+        personales += "<input type= 'hidden' name='opcion' value='1'>"
+        personales += "<input type= 'submit' value='Cambiar'>"
+        personales += "</form>"
+
+    
+        registro = "<form action='/css' method=GET>"
+        registro += "<select name='Colores de fondo'>"
+        registro += "<option value=Blanco> Blanco</option>"
+        registro += "<option value=Crema> Crema</option>"
+        registro += "<option value=Plata> Plata</option>"
+        registro += "<input type= 'submit' value='FILTRAR'>"
+        registro += "</form>"
+
+    else:
+        pag_personales = Seleccion.objects.all()
+        personales = ""
+        for pag_personal in pag_personales:
+            personales += "<br><a href='/" + pag_personal.propietario + "'>"
+            personales += pag_personal.nombre + "</a></br>"
+    
+    user=str(request.user.username)
+    personales_title="Páginas personales"
+    c = Context({'inicio': inicio, 'user': user, 'registro': registro, 'personales_title': personales_title, 'personales':personales, 'content_title': content_title, 'content': content})
     template = get_template ('museo_pers.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -98,12 +143,20 @@ def museo_pers(request, id):
     museo=Museo.objects.get(identidad=id)
     content_title = str(museo.nombre)
 
-    if request.method=="POST":
+    if request.method=="POST" and request.POST['opcion']=='1':
         texto = request.POST['texto']
         comentario = Comentario (museo = museo , texto= texto)
         comentario.save()
         museo.num_comentarios=museo.num_comentarios + 1
         museo.save()
+    if request.method=="POST" and request.POST['opcion']=='2':
+        museo_añadido = Museo_añadido (museo = museo, añadido = timezone.now())
+        museo_añadido.save()
+        seleccion = Seleccion.objects.get (propietario = request.user.username)
+        favoritos = seleccion.museos_fav.all()
+        if favoritos.filter(museo=museo_añadido.museo).count() == 0:
+            seleccion.museos_fav.add(museo_añadido)
+            seleccion.save()
 
     content = "<br><li>Descripción entidad:</li><p>" + str(museo.descripcion_entidad) + "</p><br>"
     content += "<br><li>Transporte:</li><p>" + str(museo.transporte) + "</p><br>"
@@ -130,9 +183,23 @@ def museo_pers(request, id):
         content += "<input type= 'hidden' name='opcion' value='1'>"
         content += "<input type= 'submit' value='enviar'>"
         content += "</form>"
+
+        content += "<br><form action='/museos/" + str(id) + "' method=POST>"
+        content += "<input type= 'hidden' name='opcion' value='2'>"
+        content += "<input type= 'submit' value='Añadir a mi página personal'>"
+        content += "</form></br>"
+
     if not request.user.is_authenticated():
         content += "<br><li>Podrá añadir comentarios cuando se registre en la página y se identifique. </li>"
-    c = Context({'inicio': inicio, 'registro': registro, 'content_title': content_title, 'content': content})
+    user=str(request.user.username)
+    pag_personales = Seleccion.objects.all()
+    personales = ""
+    for pag_personal in pag_personales:
+        personales += "<br><a href='/" + pag_personal.propietario + "'>"
+        personales += pag_personal.nombre + "</a></br>"
+    personales_title="Páginas personales"
+    c = Context({'inicio': inicio, 'registro': registro,'personales_title':personales_title,
+     'personales':personales, 'user': user, 'content_title': content_title, 'content': content})
     template = get_template ('museo_pers.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -149,7 +216,7 @@ def allmuseums(request):
         inicio += "<input type='submit' value='LOGIN' />"
         inicio += "</form>"
 
-        registro = "<form action='/register/' method='post'>"
+        registro = "<form action='register/' method='post'>"
         registro += "User: <input type= 'text' name='user'>"
         registro += "Email: <input type= 'text' name='email'>"
         registro += "Password: <input type= 'password' name='password'>"
@@ -180,29 +247,48 @@ def allmuseums(request):
                 content += "<br><a href=museos/" + museoid + ">"
                 content += museo.nombre + "</a><br>"
                 content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
-                if request.user.is_authenticated():
-                    content += "<form action='/museos' method=POST>"
-                    content += "<input type= 'text' name='texto'>
-                    content += "<input type= 'hidden' name='opcion' value='1'>"
-                    content += "<input type= 'submit' value='enviar'>"
-                    content += "</form>
                 content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
 
     elif request.method=="POST":
         if len(Museo.objects.all())==0:
             parserXML('./museos/museos.xml')
-        content_title ="Museos cargados"
+        content_title ="Todos los museos cargados"
         museos = Museo.objects.all ()
         content = ""
-        for museo in museos:
-            museoid = str(museo.identidad)
-            content += "<br><a href='/" + museoid + "'>"
-            content += museo.nombre + "</a><br>"
-            content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
-            content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+        if len(Museo.objects.all())==0:
+            for museo in museos:
+                museoid = str(museo.identidad)
+                content += "<br><a href='/" + museoid + "'>"
+                content += museo.nombre + "</a><br>"
+                content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+        else:
+            dist_ele = request.body.decode('utf-8').split("=")[1] #Saca el valor del distrito del POST mandado por la opcion de filtrar
+            distrito = str(dist_ele)
+            for museo in museos:
+                if distrito == str(museo.distrito):
+                    museoid = str(museo.identidad)
+                    content += "<br><a href='/" + museoid + "'>"
+                    content += museo.nombre + "</a><br>"
+                    content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                    content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
 
+    museos_distritos= Museo.objects.all()
+    distritos = museos_distritos.values_list('distrito', flat=True).distinct()
+    personales = "<form action='/museos' method='post'>"
+    personales += "<select name='Distrito'>"
+    for distrito in distritos:
+        personales += "<option value='" + distrito + "'>" + distrito
+        personales += "</option>"
+    if len(Museo.objects.all())!=0:
+        personales += "<input type= 'submit' value='FILTRAR'>"
+    else:
+        personales += "<input type= 'submit' value='CARGAR MUSEOS'>"
+    personales += "</form>"
 
-    c = Context({'inicio': inicio, 'registro': registro, 'content_title': content_title, 'content': content})
+    user=str(request.user.username)
+    personales_title="Filtrar por distrito"          
+    c = Context({'inicio': inicio, 'personales_title': personales_title, 'personales': personales, 'registro': registro, 'user': user, 'content_title': content_title, 'content': content})
     template = get_template ('museos.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -254,13 +340,26 @@ def main(request):
                 if limite == 5:
                     break
 
+        pag_personales = Seleccion.objects.all()
+        personales = ""
+        for pag_personal in pag_personales:
+            personales += "<br><a href='/" + pag_personal.propietario + "'>"
+            personales += pag_personal.nombre + "</a></br>"
+
     elif request.method == "POST":
         if len(Museo.objects.all()) == 0:
             parserXML('./museos/museos.xml')
             return redirect("/")
 
     user=str(request.user.username)
-    c = Context({'inicio':  inicio, 'registro': registro, 'user': user, 'content_title':content_title, 'content': content})
+    personales_title="Páginas personales"
+    c = Context({'inicio':  inicio, 'registro': registro, 'personales_title': personales_title, 'personales': personales,
+                 'user': user, 'content_title':content_title, 'content': content})
     template = get_template ('home.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
+
+def css (request): 
+    template = get_template ('templatemo_style.css')
+    respuesta = template.render()
+    return HttpResponseRedirect("/")

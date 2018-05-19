@@ -7,7 +7,7 @@ Orange Bar Template
 http://www.templatemo.com/preview/templatemo_160_orange_bar
 */
 html {
-	background: #fff;
+	background: #FFFFFF; /* Plata : #E6E6E6 Crema = #F3E2A9 . Blanco = #FFFFFF*/
 }
 
 body {
@@ -279,7 +279,7 @@ h1 {
 	font-size: 11px;
 	background: url(images/templatemo_footer.jpg);
 	margin: 10px 0 0 0;
-	padding: 0;
+	padding: 10;
 	text-align: center;
 }
 

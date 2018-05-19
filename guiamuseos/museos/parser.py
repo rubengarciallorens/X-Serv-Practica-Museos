@@ -71,8 +71,7 @@ def parserXML(file):
                             localiz += ", ";
                             localiz += atributo_sub.text;
                         if atributo_sub.get ('nombre') == ("DISTRITO"):
-                            localiz += ", ";
-                            localiz += atributo_sub.text;
+                            dat_distrito = atributo_sub.text;
                         if atributo_sub.get ('nombre') == ("COORDENADA-X"):
                             localiz += ", ";
                             localiz += atributo_sub.text;
@@ -100,5 +99,5 @@ def parserXML(file):
         museo = Museo ( identidad = dat_id, nombre = nom, descripcion_entidad = desc_ent, horario  = horas,
                         equipamiento = equip, transporte = trans, descripcion = desc, accesibilidad = acc,
                         url = cont_url, localizacion = localiz, telefono = dat_telefono, fax = dat_fax,
-                        email = dat_email, tipo = dat_tipo )
+                        email = dat_email, tipo = dat_tipo, distrito=dat_distrito)
         museo.save()

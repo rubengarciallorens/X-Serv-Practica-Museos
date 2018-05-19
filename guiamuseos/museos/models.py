@@ -15,6 +15,7 @@ class Museo (models.Model):
     accesibilidad = models.TextField(default = "DEFAULT_VALUE")
     url = models.TextField (default = "DEFAULT_VALUE")
     localizacion = models.TextField (default = "DEFAULT_VALUE")
+    distrito = models.TextField (default = "DEFAULT_VALUE")
     telefono = models.TextField (default = "DEFAULT_VALUE")
     fax = models.TextField (default = "No proporcionado")
     email = models.TextField (default = "No proporcionado")
@@ -35,5 +36,5 @@ class Museo_añadido (models.Model):
 
 class Seleccion (models.Model):
     museos_fav = models.ManyToManyField(Museo_añadido)
-    propietario = models.OneToOneField(modelsAuth.User)
+    propietario = models.CharField(max_length=30)
     nombre = models.TextField(default = "DEFAULT_VALUE")

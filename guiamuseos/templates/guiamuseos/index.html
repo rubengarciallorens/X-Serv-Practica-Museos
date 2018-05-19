@@ -60,15 +60,11 @@ function clearText(field)
 			<div id="templatemo_right">
 				<div class="templatemo_section">
 					<div class="templatemo_section_title">
-						Categories
+						{{personales_title|safe}}
 					</div>
 					<div class="templatemo_section_bottom">
 						<ul class="templatemo_list">
-							<li><a href="#">Amet massdtess vivamus sed condimentum ipsum</a></li>
-							<li><a href="#">Donec nec justo eget felis facilisis fermentum</a></li>
-							<li><a href="#">Fusce lobortis lorem at ipsum sem</a></li>
-							<li><a href="#">Nulla vitae mau ris non felis mollis fau cibus</a></li>
-							<li><a href="#">Cras ornare tristique elit conval lis</a></li>
+							{% block personales %}{% endblock %}
 						</ul>
 					</div>
 				</div>
