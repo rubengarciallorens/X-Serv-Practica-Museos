@@ -19,6 +19,8 @@ from django.core.urlresolvers import reverse_lazy
 
 # Create your views here.
 
+solo_museos = 0
+
 @csrf_exempt
 def auth_login(request):
     username = request.POST['username']
@@ -69,7 +71,11 @@ def personal (request, propietario):
         content=""
         for favorito in favoritos:
             content+="<li>" + favorito.museo.nombre +"</li>"
-            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>" 
+            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+
+        if len(favoritos)!=0:
+            content += "<li><a href='/" + propietario + "/XML'>"
+            content += "XML</a></li>" 
     
     elif request.method =="POST" and request.POST['opcion']=='1':
         seleccion = Seleccion.objects.get (propietario = propietario)
@@ -80,10 +86,15 @@ def personal (request, propietario):
         content=""
         for favorito in favoritos:
             content+="<li>" + favorito.museo.nombre +"</li>"
-            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>" 
+            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+
+        if len(favoritos)!=0:
+            content += "<li><a href='/" + propietario + "/XML'>"
+            content += "XML</a></li>"
      
     
     if request.user.is_authenticated() and request.user.username == propietario:
+
         personales = "<form action='/" + propietario + "' method=POST>"
         personales += "Cambiar nombre de tu página personal<input type= 'text' name='texto'>"
         personales += "<input type= 'hidden' name='opcion' value='1'>"
@@ -277,7 +288,7 @@ def allmuseums(request):
             for museo in museos:
                 if distrito == str(museo.distrito):
                     museoid = str(museo.identidad)
-                    content += "<br><a href='/" + museoid + "'>"
+                    content += "<br><a href='/museos/" + museoid + "'>"
                     content += museo.nombre + "</a><br>"
                     content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
                     content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
@@ -304,6 +315,13 @@ def allmuseums(request):
 
 @csrf_exempt
 def main(request):
+    
+    global solo_museos
+    if solo_museos == 0:
+        accesibilidad ="Mostrar solo museos"
+    elif solo_museos == 1:
+        accesibilidad = "Mostrar todos los establecimientos tengan accesibilidad 1 o no"
+
     if len(Museo.objects.all())==0:
         content_title ="Aún no hay museos cargados"
         content = "<form action='/' method='post'>"
@@ -362,8 +380,13 @@ def main(request):
 
     user=str(request.user.username)
     personales_title="Páginas personales"
+    global solo_museos
+    if solo_museos == 0:
+        accesibilidad ="Mostrar solo museos"
+    elif solo_museos == 1:
+        accesibilidad = "Mostrar todos los establecimientos tengan accesibilidad 1 o no"
     c = Context({'inicio':  inicio, 'registro': registro, 'personales_title': personales_title, 'personales': personales,
-                 'user': user, 'content_title':content_title, 'content': content})
+                 'user': user, 'content_title':content_title, 'content': content, 'accesibilidad': accesibilidad})
     template = get_template ('home.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -418,4 +441,38 @@ def css_letra (request):
         css_new.write(line)
 
     css_new.close()
+    return HttpResponseRedirect("/")
+
+def XML(request, propietario):
+    seleccion = Seleccion.objects.get(propietario=propietario)
+    museos = seleccion.museos_fav.all()
+    respuesta = "<?xml version='1.0' encoding='UTF-8'?>\n"
+    respuesta += "<Contenidos>"
+    for museo in museos:
+        respuesta += "<contenido>"
+        respuesta += "<atributo nombre='ID-ENTIDAD'>" + museo.museo.identidad + "</atributo>"
+        respuesta += "<atributo nombre='NOMBRE'>" + museo.museo.nombre + "</atributo>"
+        respuesta += "<atributo nombre='EQUIPAMIENTO'>" + museo.museo.equipamiento + "</atributo>"
+        respuesta += "<atributo nombre='TRANSPORTE'>" + museo.museo.transporte + "</atributo>"
+        respuesta += "<atributo nombre='DESCRIPCION'>" + museo.museo.descripcion + "</atributo>"
+        respuesta += "<atributo nombre='HORARIO'>" + museo.museo.horario + "</atributo>"
+        respuesta += "<atributo nombre='ACCESIBILIDAD'>" + museo.museo.accesibilidad + "</atributo>"
+        respuesta += "<atributo nombre='LOCALIZACION'>" + museo.museo.localizacion + "</atributo>"
+        respuesta += "<atributo nombre='DISTRITO'>" + museo.museo.distrito + "</atributo>"
+        respuesta += "<atributo nombre='TELEFONO'>" + museo.museo.telefono + "</atributo>"
+        respuesta += "<atributo nombre='FAX'>" + museo.museo.fax + "</atributo>"
+        respuesta += "<atributo nombre='EMAIL'>" + museo.museo.email + "</atributo>"
+        respuesta += "<atributo nombre='TIPO'>" + museo.museo.tipo + "</atributo>"
+        respuesta += "<atributo nombre='NUM-COMENTARIOS'>" + str(museo.museo.num_comentarios) + "</atributo>"
+        respuesta += "</contenido>"
+    respuesta += "</Contenidos>"
+    return HttpResponse(respuesta, content_type="text/xml")
+
+def accesibilidad (request):
+    if solo_museos == 1:
+        global solo_museos
+        solo_museos = 0 
+    elif solo_museos == 0:
+        global solo_museos
+        solo_museos = 1
     return HttpResponseRedirect("/")

@@ -23,7 +23,6 @@ admin.autodiscover ()
 
 urlpatterns = [
     url(r'^$', views.main, name='home'),
-    url(r'/', views.main, name='home'),
     url(r'css_color', views.css_color),
     url(r'css_letra', views.css_letra),
     url(r'^admin/', include(admin.site.urls)),
@@ -32,5 +31,8 @@ urlpatterns = [
     url(r'^museos',  views.allmuseums),
     url(r'^logout', logout, {'next_page': '/'}),
     url(r'^register', views.register),
+    url(r'^accesibilidad', views.accesibilidad),
+    url(r'^(.*)/XML', views.XML),
     url(r'^(.*)$', views.personal),
+    url(r'/', views.main, name='home'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
