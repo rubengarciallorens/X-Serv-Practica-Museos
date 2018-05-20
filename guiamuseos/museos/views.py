@@ -540,3 +540,19 @@ def accesibilidad (request):
         global solo_museos
         solo_museos = 1
     return HttpResponseRedirect("/")
+
+def about (request):
+    respuesta = "<p> Práctica realizada por: </p>"
+    respuesta += "<p> - Rubén García Llorens </p>"
+    respuesta += "<p> - DNI : 49101460W </p>"
+    respuesta += "<p> - Doble Grado Sistemas de Telecomunicaciones y ADE </p>"
+    respuesta += "<p> Si es la primera vez que accedes al sitio, te aparecerá un boton para cargar los museos que llamara a la función parser para parsear el XML de la comunidad, y guardarlo en la base de datos. </p>"
+    respuesta += "<p> Una vez realizado esto se tendrá acceso al sitio completo. </p>"
+    respuesta += "<p> Para registrar a un usuario bastará con rellenar los campos de registro que se encuentran a la derecha y pulsar en registro </p>"
+    respuesta += "<p> Esto registrará al usuario, que ya podrá entrar en su cuenta haciendo login en la esquina superior derecha</p>"
+    respuesta += "<p> Una vez identificado, cuando vaya a los museos y entre en la página propia de alguno  (pinchando en Más información) podrá añadirlo a su página personal y añadir comentarios para el mismo, que serán anónimos </p>"
+    respuesta += "<p> En la página personal del usuario verá los museos que ha añadido y podrá cambiar el nombre a la derecha de su página. También podrás acceder a un XML con tus museos favoritos pinchando en el enlace 'XML' </p>"
+    respuesta += "<p> En caso de entrar en una página de la cual no eres propietario verás simplemente los museos añadidos pero no podrás cambiar el nombre ni obtener el HTML </p>"
+    respuesta += "<p> En la página principal, abajo te aparecerá un enlace en Accesibilidad, que al pincharlo la página pasará a mostrar todos los museos de la base de datos, o en su defecto solo los que tienen accesibilidad=1, depende lo que esté mostrando en ese momento.</p>"
+    respuesta += "<p> Para acceder a /about, abajo en el template pinchando en 'RubénGarcíaLlorens'</p>"
+    return HttpResponse(respuesta)

@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'css_color', views.css_color),
     url(r'css_letra', views.css_letra),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^about',  views.about),
     url(r'^login',  views.auth_login),
     url(r'^museos/(\d+)$', views.museo_pers),
     url(r'^museos',  views.allmuseums),
