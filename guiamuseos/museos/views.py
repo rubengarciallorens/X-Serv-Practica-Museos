@@ -50,6 +50,7 @@ def register(request):
 
 @csrf_exempt
 def personal (request, propietario):
+    global solo_museos
     if not request.user.is_authenticated():
         inicio = "<form action='/login' method='post'>"
         inicio += "<label for='username'>Username:</label>"
@@ -59,10 +60,20 @@ def personal (request, propietario):
         inicio += "<input type='submit' value='LOGIN' />"
         inicio += "</form>"
 
+        registro = "<form action='/register/' method='post'>"
+        registro += "User: <input type= 'text' name='user'>"
+        registro += "Email: <input type= 'text' name='email'>"
+        registro += "Password: <input type= 'password' name='password'>"
+        registro += "<input type= 'submit' value='enviar'>"
+        registro += "</form>"
+
     if request.user.is_authenticated():
         inicio = "<p>Bienvenido,  "
         inicio += request.user.username
         inicio += "<a href='/logout'> Logout </a></p>"
+        registro = "<p> Se ha identificado usted como: "
+        registro += "<h2>" + request.user.username + "</h2>"
+        registro +="<br> Esperamos que su visita a la página sea satisfactoria"
 
     if request.method == "GET":
         seleccion = Seleccion.objects.get (propietario = propietario)
@@ -70,8 +81,13 @@ def personal (request, propietario):
         content_title=seleccion.nombre
         content=""
         for favorito in favoritos:
-            content+="<li>" + favorito.museo.nombre +"</li>"
-            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+            if solo_museos==0:
+                content+="<li>" + favorito.museo.nombre +"</li>"
+                content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+            elif solo_museos==1:
+                if favorito.museo.accesibilidad=='1':
+                    content+="<li>" + favorito.museo.nombre +"</li>"
+                    content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
 
         if len(favoritos)!=0:
             content += "<li><a href='/" + propietario + "/XML'>"
@@ -85,8 +101,13 @@ def personal (request, propietario):
         content_title=seleccion.nombre
         content=""
         for favorito in favoritos:
-            content+="<li>" + favorito.museo.nombre +"</li>"
-            content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+            if solo_museos==0:
+                content+="<li>" + favorito.museo.nombre +"</li>"
+                content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+            elif solo_museos==1:
+                if favorito.museo.accesibilidad=='1':
+                    content+="<li>" + favorito.museo.nombre +"</li>"
+                    content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
 
         if len(favoritos)!=0:
             content += "<li><a href='/" + propietario + "/XML'>"
@@ -101,7 +122,7 @@ def personal (request, propietario):
         personales += "<input type= 'submit' value='Cambiar'>"
         personales += "</form>"
 
-        registro = "<br> Personalizar color fondo </br>"
+        registro = "<li> Personalizar color fondo (en ocasiones será necesario recargar la página para que se apliquen los cambios)</li>"
         registro += "<br><form action='/css_color' method=GET>"
         registro += "<select name='Colores de fondo'>"
         registro += "<option value=Blanco> Blanco</option>"
@@ -110,7 +131,7 @@ def personal (request, propietario):
         registro += "<input type= 'submit' value='FILTRAR'>"
         registro += "</form></br>"
 
-        registro += "<br> Cambiar tamaño letra </br>"
+        registro += "<li> Cambiar tamaño letra (en ocasiones será necesario recargar la página para que se apliquen los cambios) </li>"
         registro += "<br><form action='/css_letra' method=GET>"
         registro += "<select name='Tamaño letra cuerpo página'>"
         registro += "<option value=Pequeña> Pequeña</option>"
@@ -158,7 +179,7 @@ def museo_pers(request, id):
         inicio += "<a href='/logout'> Logout </a></p>"
         registro = "<p> Se ha identificado usted como: "
         registro += "<h2>" + request.user.username + "</h2>"
-        registro +="." + "<br> Esperamos que su visita a la página sea satisfactoria"
+        registro +="<br> Esperamos que su visita a la página sea satisfactoria"
 
     museo=Museo.objects.get(identidad=id)
     content_title = str(museo.nombre)
@@ -226,6 +247,7 @@ def museo_pers(request, id):
 
 @csrf_exempt
 def allmuseums(request):
+    global solo_museos
     if not request.user.is_authenticated():
         inicio = "<form action='/login' method='post'>"
         inicio += "<label for='username'>Username:</label>"
@@ -250,7 +272,7 @@ def allmuseums(request):
 
         registro = "<p> Se ha identificado usted como: "
         registro += "<h2>" + request.user.username + "</h2>"
-        registro +="." + "<br> Esperamos que su visita a la página sea satisfactoria"
+        registro +="<br> Esperamos que su visita a la página sea satisfactoria"
 
     if request.method=="GET":
         if len(Museo.objects.all())==0:
@@ -263,11 +285,19 @@ def allmuseums(request):
             museos = Museo.objects.all ()
             content = ""
             for museo in museos:
-                museoid = str(museo.identidad)
-                content += "<br><a href=museos/" + museoid + ">"
-                content += museo.nombre + "</a><br>"
-                content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
-                content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+                if solo_museos ==0:
+                    museoid = str(museo.identidad)
+                    content += "<br><a href=museos/" + museoid + ">"
+                    content += museo.nombre + "</a><br>"
+                    content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                    content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+                elif solo_museos ==1:
+                    if museo.accesibilidad=='1':
+                        museoid = str(museo.identidad)
+                        content += "<br><a href=museos/" + museoid + ">"
+                        content += museo.nombre + "</a><br>"
+                        content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                        content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
 
     elif request.method=="POST":
         if len(Museo.objects.all())==0:
@@ -277,21 +307,37 @@ def allmuseums(request):
         content = ""
         if len(Museo.objects.all())==0:
             for museo in museos:
-                museoid = str(museo.identidad)
-                content += "<br><a href='/" + museoid + "'>"
-                content += museo.nombre + "</a><br>"
-                content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
-                content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+                if solo_museos==0:
+                    museoid = str(museo.identidad)
+                    content += "<br><a href='/" + museoid + "'>"
+                    content += museo.nombre + "</a><br>"
+                    content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                    content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+                elif solo_museos ==1:
+                    if museo.accesibilidad=='1':
+                        museoid = str(museo.identidad)
+                        content += "<br><a href='/" + museoid + "'>"
+                        content += museo.nombre + "</a><br>"
+                        content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                        content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
         else:
             dist_ele = request.body.decode('utf-8').split("=")[1] #Saca el valor del distrito del POST mandado por la opcion de filtrar
             distrito = str(dist_ele)
             for museo in museos:
-                if distrito == str(museo.distrito):
-                    museoid = str(museo.identidad)
-                    content += "<br><a href='/museos/" + museoid + "'>"
-                    content += museo.nombre + "</a><br>"
-                    content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
-                    content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+                if solo_museos==0:
+                    if distrito == str(museo.distrito):
+                        museoid = str(museo.identidad)
+                        content += "<br><a href='/museos/" + museoid + "'>"
+                        content += museo.nombre + "</a><br>"
+                        content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                        content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
+                elif solo_museos==1:
+                    if museo.accesibilidad=='1':
+                        museoid = str(museo.identidad)
+                        content += "<br><a href='/museos/" + museoid + "'>"
+                        content += museo.nombre + "</a><br>"
+                        content += "<br><li>URL del sitio: </li> <a href='" + museo.url +"'> " + museo.url + "</a></br>"
+                        content += "<br> ---------------------------------------------------------------------------------------------------------------------------------------- </br>"
 
     museos_distritos= Museo.objects.all()
     distritos = museos_distritos.values_list('distrito', flat=True).distinct()
@@ -315,7 +361,7 @@ def allmuseums(request):
 
 @csrf_exempt
 def main(request):
-    
+
     global solo_museos
     if solo_museos == 0:
         accesibilidad ="Mostrar solo museos"
@@ -355,18 +401,24 @@ def main(request):
 
             registro = "<p> Se ha identificado usted como: "
             registro += "<h2>" + request.user.username + "</h2>"
-            registro +="." + "<br> Esperamos que su visita a la página sea satisfactoria"
+            registro +="<br> Esperamos que su visita a la página sea satisfactoria"
 
 
         museos = Museo.objects.order_by('-num_comentarios')
         limite=0
         for museo in museos:
             if not museo.num_comentarios==0:
-                content += "<a href=museos/" + museo.identidad + "><p>" + str(museo.nombre) + "</p>"
-                limite=limite+1;
-                if limite == 5:
-                    break
-
+                if solo_museos == 0:
+                    content += "<a href=museos/" + museo.identidad + "><p>" + str(museo.nombre) + "</p>"
+                    limite=limite+1;
+                    if limite == 5:
+                        break
+                elif solo_museos ==1:
+                    if museo.accesibilidad=='1':
+                        content += "<a href=museos/" + museo.identidad + "><p>" + str(museo.nombre) + "</p>"
+                        limite=limite+1;
+                        if limite == 5:
+                            break
         pag_personales = Seleccion.objects.all()
         personales = ""
         for pag_personal in pag_personales:
@@ -384,7 +436,7 @@ def main(request):
     if solo_museos == 0:
         accesibilidad ="Mostrar solo museos"
     elif solo_museos == 1:
-        accesibilidad = "Mostrar todos los establecimientos tengan accesibilidad 1 o no"
+        accesibilidad = "Mostrar todos emplazamientos"
     c = Context({'inicio':  inicio, 'registro': registro, 'personales_title': personales_title, 'personales': personales,
                  'user': user, 'content_title':content_title, 'content': content, 'accesibilidad': accesibilidad})
     template = get_template ('home.html')
