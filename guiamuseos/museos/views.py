@@ -90,14 +90,23 @@ def personal (request, propietario):
         personales += "<input type= 'submit' value='Cambiar'>"
         personales += "</form>"
 
-    
-        registro = "<form action='/css' method=GET>"
+        registro = "<br> Personalizar color fondo </br>"
+        registro += "<br><form action='/css_color' method=GET>"
         registro += "<select name='Colores de fondo'>"
         registro += "<option value=Blanco> Blanco</option>"
         registro += "<option value=Crema> Crema</option>"
         registro += "<option value=Plata> Plata</option>"
         registro += "<input type= 'submit' value='FILTRAR'>"
-        registro += "</form>"
+        registro += "</form></br>"
+
+        registro += "<br> Cambiar tamaño letra </br>"
+        registro += "<br><form action='/css_letra' method=GET>"
+        registro += "<select name='Tamaño letra cuerpo página'>"
+        registro += "<option value=Pequeña> Pequeña</option>"
+        registro += "<option value=Mediana> Mediana</option>"
+        registro += "<option value=Grande> Grande</option>"
+        registro += "<input type= 'submit' value='FILTRAR'>"
+        registro += "</form></br>"
 
     else:
         pag_personales = Seleccion.objects.all()
@@ -359,7 +368,54 @@ def main(request):
     respuesta = template.render(c)
     return HttpResponse(respuesta)
 
-def css (request): 
-    template = get_template ('templatemo_style.css')
-    respuesta = template.render()
+def css_color (request): 
+
+    color = request.GET['Colores de fondo']
+    css_old = open ('museos/static/css/templatemo_style.css', 'r') #Lo utilizo para saber las filas del css
+    lines = []
+    for line in css_old:
+        lines.append(line)
+    css_old.close()
+
+    css_new = open ('museos/static/css/templatemo_style.css', 'w') #Lo utilizo para saber las filas del css
+    maximo = 0
+    for line in lines:
+        if color != 'None':
+            if maximo == 11:    #Aquí está la línea del background
+                if color == 'Crema':
+                    line = "background: #F3E2A9;\n"
+                elif color == 'Blanco':
+                    line = "background: #FFFFFF;\n"
+                elif color == 'Plata':
+                    line = "background: #E6E6E6;\n"
+        maximo=maximo+1
+        css_new.write(line)
+
+    css_new.close()
+
+    return HttpResponseRedirect("/")
+
+def css_letra (request):
+    letra = request.GET['Tamaño letra cuerpo página']
+    css_old = open ('museos/static/css/templatemo_style.css', 'r') #Lo utilizo para saber las filas del css
+    lines = []
+    for line in css_old:
+        lines.append(line)
+    css_old.close()
+
+    css_new = open ('museos/static/css/templatemo_style.css', 'w') #Lo utilizo para saber las filas del css
+    maximo = 0
+    for line in lines:
+        if letra != 'None':
+            if maximo == 18:    #Aquí está la línea del background
+                if letra == 'Pequeña':
+                    line = "font-size: 8px;\n"
+                elif letra == 'Mediana':
+                    line = "font-size: 12px;\n"
+                elif letra == 'Grande':
+                    line = "font-size: 16px;\n"
+        maximo=maximo+1
+        css_new.write(line)
+
+    css_new.close()
     return HttpResponseRedirect("/")

@@ -1,20 +1,22 @@
-/*
+/* Hellowda
 CSS Credit: http://www.templatemo.com
 */
+
+/* Plata : #E6E6E6 Crema = #F3E2A9 . Blanco = #FFFFFF*/
 
 /*
 Orange Bar Template
 http://www.templatemo.com/preview/templatemo_160_orange_bar
 */
 html {
-	background: #FFFFFF; /* Plata : #E6E6E6 Crema = #F3E2A9 . Blanco = #FFFFFF*/
+background: #FFFFFF;
 }
 
 body {
 	margin: 0;
 	padding:0;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
+font-size: 12px;
 	line-height: 1.5em;
 	width: 100%;
 	display: table;

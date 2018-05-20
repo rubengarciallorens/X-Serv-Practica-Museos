@@ -23,7 +23,9 @@ admin.autodiscover ()
 
 urlpatterns = [
     url(r'^$', views.main, name='home'),
-    url(r'css', views.css),
+    url(r'/', views.main, name='home'),
+    url(r'css_color', views.css_color),
+    url(r'css_letra', views.css_letra),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login',  views.auth_login),
     url(r'^museos/(\d+)$', views.museo_pers),
