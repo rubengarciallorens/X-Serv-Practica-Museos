@@ -161,8 +161,8 @@ def personal (request, propietario):
     todos_comentarios = Comentario.objects.all()
     maximo = len(todos_comentarios) - 5
     num=0
+    comentarios =""
     if len(todos_comentarios)!=0:
-        comentarios =""
         for comentario in todos_comentarios:
             if num >= maximo:
                 comentarios += "<li>" + comentario.museo.nombre + ":</li>"
@@ -263,8 +263,8 @@ def museo_pers(request, id):
     todos_comentarios = Comentario.objects.all()
     maximo = len(todos_comentarios) - 5
     num=0
+    comentarios =""
     if len(todos_comentarios)!=0:
-        comentarios =""
         for comentario in todos_comentarios:
             if num >= maximo:
                 comentarios += "<li>" + comentario.museo.nombre + ":</li>"
@@ -390,8 +390,8 @@ def allmuseums(request):
     todos_comentarios = Comentario.objects.all()
     maximo = len(todos_comentarios) - 5
     num=0
+    comentarios =""
     if len(todos_comentarios)!=0:
-        comentarios =""
         for comentario in todos_comentarios:
             if num >= maximo:
                 comentarios += "<li>" + comentario.museo.nombre + ":</li>"
@@ -490,8 +490,8 @@ def main(request):
     todos_comentarios = Comentario.objects.all()
     maximo = len(todos_comentarios) - 5
     num=0
+    comentarios =""
     if len(todos_comentarios)!=0:
-        comentarios =""
         for comentario in todos_comentarios:
             if num >= maximo:
                 comentarios += "<li>" + comentario.museo.nombre + ":</li>"
