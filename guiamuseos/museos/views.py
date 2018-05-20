@@ -82,12 +82,16 @@ def personal (request, propietario):
         content=""
         for favorito in favoritos:
             if solo_museos==0:
-                content+="<li>" + favorito.museo.nombre +"</li>"
-                content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+                content += "<br><li><a href='" + favorito.museo.url + "'><p>" + str(favorito.museo.nombre) + ":</p></a></li></br>"
+                content += "<br>Dirección: " + favorito.museo.localizacion +"</br>"
+                content += "<br><a href=museos/" + favorito.museo.identidad + "><p> Más información</p></a></br>"
+                content+="<br><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Añadido: " + str(favorito.añadido) + "</br></p>"
             elif solo_museos==1:
                 if favorito.museo.accesibilidad=='1':
-                    content+="<li>" + favorito.museo.nombre +"</li>"
-                    content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+                    content += "<br><li><a href='" + favorito.museo.url + "'><p>" + str(favorito.museo.nombre) + ":</p></a></li></br>"
+                    content += "<br>Dirección: " + favorito.museo.localizacion +"</br>"
+                    content += "<br><a href=museos/" + favorito.museo.identidad + "><p> Más información</p></a></br>"
+                    content+="<br><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Añadido: " + str(favorito.añadido) + "</br></p>"
 
         if len(favoritos)!=0:
             content += "<li><a href='/" + propietario + "/XML'>"
@@ -102,12 +106,16 @@ def personal (request, propietario):
         content=""
         for favorito in favoritos:
             if solo_museos==0:
-                content+="<li>" + favorito.museo.nombre +"</li>"
-                content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+                content += "<br><li><a href='" + favorito.museo.url + "'><p>" + str(favorito.museo.nombre) + ":</p></a></li></br>"
+                content += "<br>Dirección: " + favorito.museo.localizacion +"</br>"
+                content += "<br><a href=museos/" + favorito.museo.identidad + "><p> Más información</p></a></br>"
+                content+="<br><p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Añadido: " + str(favorito.añadido) + "</br></p>"
             elif solo_museos==1:
                 if favorito.museo.accesibilidad=='1':
-                    content+="<li>" + favorito.museo.nombre +"</li>"
-                    content+="<br><p> Añadido: " + str(favorito.añadido) + "</br></p>"
+                    content += "<br><li><a href='" + favorito.museo.url + "'><p>" + str(favorito.museo.nombre) + ":</p></a></li></br>"
+                    content += "<br>Dirección: " + favorito.museo.localizacion +"</br>"
+                    content += "<br><a href=museos/" + favorito.museo.identidad + "><p> Más información</p></a></br>"
+                    content+="<br><p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Añadido: " + str(favorito.añadido) + "</br></p>"
 
         if len(favoritos)!=0:
             content += "<li><a href='/" + propietario + "/XML'>"
@@ -409,13 +417,17 @@ def main(request):
         for museo in museos:
             if not museo.num_comentarios==0:
                 if solo_museos == 0:
-                    content += "<a href=museos/" + museo.identidad + "><p>" + str(museo.nombre) + "</p>"
+                    content += "<li><a href='" + museo.url + "'><p>" + str(museo.nombre) + ":</p></a></li>"
+                    content += "<br>Dirección: " + museo.localizacion +"</br>"
+                    content += "<br><a href=museos/" + museo.identidad + "><p> Más información</p></a></br>"
                     limite=limite+1;
                     if limite == 5:
                         break
                 elif solo_museos ==1:
                     if museo.accesibilidad=='1':
-                        content += "<a href=museos/" + museo.identidad + "><p>" + str(museo.nombre) + "</p>"
+                        content += "<li><a href='" + museo.url + "'><p>" + str(museo.nombre) + ":</p></a></li>"
+                        content += "<br>Dirección: " + museo.localizacion +"</br>"
+                        content += "<br><a href=museos/" + museo.identidad + "><p> Más información</p></a></br>"
                         limite=limite+1;
                         if limite == 5:
                             break
