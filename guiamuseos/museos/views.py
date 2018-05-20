@@ -157,7 +157,19 @@ def personal (request, propietario):
     
     user=str(request.user.username)
     personales_title="Páginas personales"
-    c = Context({'inicio': inicio, 'user': user, 'registro': registro, 'personales_title': personales_title, 'personales':personales, 'content_title': content_title, 'content': content})
+
+    todos_comentarios = Comentario.objects.all()
+    maximo = len(todos_comentarios) - 5
+    num=0
+    if len(todos_comentarios)!=0:
+        comentarios =""
+        for comentario in todos_comentarios:
+            if num >= maximo:
+                comentarios += "<li>" + comentario.museo.nombre + ":</li>"
+                comentarios += "<p>&nbsp&nbsp&nbsp&nbsp" + comentario.texto + "</p>"
+            num = num+1
+
+    c = Context({'inicio': inicio, 'user': user, 'registro': registro, 'personales_title': personales_title, 'personales':personales, 'content_title': content_title, 'content': content, 'comentarios':comentarios})
     template = get_template ('museo_pers.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -247,8 +259,20 @@ def museo_pers(request, id):
         personales += "<br><a href='/" + pag_personal.propietario + "'>"
         personales += pag_personal.nombre + "</a></br>"
     personales_title="Páginas personales"
+
+    todos_comentarios = Comentario.objects.all()
+    maximo = len(todos_comentarios) - 5
+    num=0
+    if len(todos_comentarios)!=0:
+        comentarios =""
+        for comentario in todos_comentarios:
+            if num >= maximo:
+                comentarios += "<li>" + comentario.museo.nombre + ":</li>"
+                comentarios += "<p>&nbsp&nbsp&nbsp&nbsp" + comentario.texto + "</p>"
+            num = num+1
+
     c = Context({'inicio': inicio, 'registro': registro,'personales_title':personales_title,
-     'personales':personales, 'user': user, 'content_title': content_title, 'content': content})
+     'personales':personales, 'user': user, 'content_title': content_title, 'content': content, 'comentarios':comentarios})
     template = get_template ('museo_pers.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -361,8 +385,20 @@ def allmuseums(request):
     personales += "</form>"
 
     user=str(request.user.username)
-    personales_title="Filtrar por distrito"          
-    c = Context({'inicio': inicio, 'personales_title': personales_title, 'personales': personales, 'registro': registro, 'user': user, 'content_title': content_title, 'content': content})
+    personales_title="Filtrar por distrito"
+
+    todos_comentarios = Comentario.objects.all()
+    maximo = len(todos_comentarios) - 5
+    num=0
+    if len(todos_comentarios)!=0:
+        comentarios =""
+        for comentario in todos_comentarios:
+            if num >= maximo:
+                comentarios += "<li>" + comentario.museo.nombre + ":</li>"
+                comentarios += "<p>&nbsp&nbsp&nbsp&nbsp" + comentario.texto + "</p>"
+            num = num+1          
+    
+    c = Context({'inicio': inicio, 'personales_title': personales_title, 'personales': personales, 'registro': registro, 'user': user, 'content_title': content_title, 'content': content, 'comentarios':comentarios})
     template = get_template ('museos.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -449,8 +485,21 @@ def main(request):
         accesibilidad ="Mostrar solo museos"
     elif solo_museos == 1:
         accesibilidad = "Mostrar todos emplazamientos"
+
+    
+    todos_comentarios = Comentario.objects.all()
+    maximo = len(todos_comentarios) - 5
+    num=0
+    if len(todos_comentarios)!=0:
+        comentarios =""
+        for comentario in todos_comentarios:
+            if num >= maximo:
+                comentarios += "<li>" + comentario.museo.nombre + ":</li>"
+                comentarios += "<p>&nbsp&nbsp&nbsp&nbsp" + comentario.texto + "</p>"
+            num = num+1
+
     c = Context({'inicio':  inicio, 'registro': registro, 'personales_title': personales_title, 'personales': personales,
-                 'user': user, 'content_title':content_title, 'content': content, 'accesibilidad': accesibilidad})
+                 'user': user, 'content_title':content_title, 'content': content, 'accesibilidad': accesibilidad, 'comentarios':comentarios})
     template = get_template ('home.html')
     respuesta = template.render(c)
     return HttpResponse(respuesta)
@@ -555,4 +604,5 @@ def about (request):
     respuesta += "<p> En caso de entrar en una página de la cual no eres propietario verás simplemente los museos añadidos pero no podrás cambiar el nombre ni obtener el HTML </p>"
     respuesta += "<p> En la página principal, abajo te aparecerá un enlace en Accesibilidad, que al pincharlo la página pasará a mostrar todos los museos de la base de datos, o en su defecto solo los que tienen accesibilidad=1, depende lo que esté mostrando en ese momento.</p>"
     respuesta += "<p> Para acceder a /about, abajo en el template pinchando en 'RubénGarcíaLlorens'</p>"
+    respuesta += "<p> Además de las funciones obligatorias, está implementado el favicon, y abajo a la izquierda hay un feed que siempre muestra los últimos 5 comentarios añadidos"
     return HttpResponse(respuesta)

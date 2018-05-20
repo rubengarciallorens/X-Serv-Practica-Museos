@@ -15,6 +15,7 @@ function clearText(field)
 	else if (field.value == '') field.value = field.defaultValue;
 }
 </script>
+<link rel="shortcut icon" type="image/ico" href="{% static 'css/images/favicon.ico' %}"/>
 </head>
 <body>
 	<div class="templatemo_container">
@@ -89,9 +90,9 @@ function clearText(field)
 	<div id="templatemo_bottom_area">
 		<div class="templatemo_container">
 			<div class="templatemo_section_1">
-				<h1>Comments RSS</h1>
+				<h1>Últimos 5 comentarios</h1>
 				<ul class="templatemo_list templatemo_gray_list">
-					{{comentarios}}
+					{{ comentarios|safe }}
 				</ul>
 			</div>
 
